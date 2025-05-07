@@ -18,6 +18,30 @@
       font-style: normal;
     }
 
+    .ghibli-title {
+      font-family: 'Luna', sans-serif;
+      font-size: 2.5rem;
+      color: #ff5e00;
+      margin-bottom: 2rem;
+    }
+
+    body {
+      background-image: url('assets/bg-8.webp');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 2rem;
+      margin-top: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
     /* Use more styles as needed */
   
   </style>
@@ -25,12 +49,65 @@
 <body class="p-4">
 
   <!-- Complete this part -->
+  <div id="app" class="container">
+    <h1 class="text-center mb-4 ghibli-title">Which Ghibli Character Are You?</h1>
+    
+    <div class="row">
+      <div class="col-md-8 mx-auto">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Select your traits:</h5>
+            <div class="row">
+              <div class="col-md-4" v-for="trait in availableTraits" :key="trait">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" :id="trait" :value="trait" v-model="selectedTraits">
+                  <label class="form-check-label" :for="trait">
+                    {{ trait }}
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="text-center mt-4">
+              <button class="btn btn-primary" @click="findCharacter">Reveal My Character</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="row mt-4" v-if="result">
+      <div class="col-md-8 mx-auto">
+        <div class="card">
+          <div class="card-body text-center">
+            <h2>You are most like {{ result.name }}!</h2>
+            <img :src="result.image" :alt="result.name" class="character-img my-4">
+            <p class="lead">{{ result.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- No Result Message -->
+    <div class="row mt-4" v-if="noResult">
+      <div class="col-md-8 mx-auto">
+        <div class="alert alert-warning text-center">
+          Hmm...Either you didn't select any traits or we couldn't find a match. Please try again
+        </div>
+      </div>
+    </div>
+  </div>
 
 <script>
 Vue.createApp({
   data() {
     return {
-      /* complete this part */
+      availableTraits: [
+        'Kind', 'Quiet', 'Protective', 'Empathetic', 'Brave', 'Adventurous', 
+        'Independent', 'Hardworking', 'Curious', 'Mischievous', 'Witty', 
+        'Mysterious', 'Dreamy', 'Loyal', 'Funny', 'Magical', 'Ambitious'
+      ],
+      selectedTraits: [],
       characters: [
         {
           name: 'Totoro',
@@ -89,6 +166,12 @@ Vue.createApp({
     findCharacter() {
       this.result = null;
       this.noResult = false;
+
+      // 检查是否选择了任何特征
+      if (this.selectedTraits.length === 0) {
+        this.noResult = true;
+        return;
+      }
 
       let bestMatch = null;
       let highestScore = 0;
